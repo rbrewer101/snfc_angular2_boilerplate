@@ -1,5 +1,7 @@
 var gulp = require('gulp');
 
+var typedoc = require("gulp-typedoc");
+
 var assetsDev = 'assets/';
 var assetsProd = 'src/';
 
@@ -24,6 +26,33 @@ var typescript = require('gulp-typescript');
 var imagemin = require('gulp-imagemin');
 
 var tsProject = typescript.createProject('tsconfig.json');
+
+/* Typedoc gulp task */
+gulp.task("typedoc", function() {
+    return gulp
+        .src(appDev + '**/*.ts')
+        .pipe(typedoc({ 
+            // TypeScript options (see typescript docs) 
+            module: "commonjs", 
+            target: "es5",
+            includeDeclarations: true,
+            experimentalDecorators: true,
+            
+            // Output options (see typedoc docs) 
+            out: "./docs", 
+            json: "output/to/file.json",
+ 
+            // TypeDoc options (see typedoc docs) 
+            name: "my-project", 
+            ignoreCompilerErrors: false,
+            version: true,
+        }))
+        //.pipe(sourcemaps.init())
+        //.pipe(typescript(tsProject))
+        //.pipe(sourcemaps.write())
+        //.pipe(gulp.dest("./docs"));
+    ;
+});
 
 gulp.task('build-css', function () {
     return gulp.src(assetsDev + 'scss/*.scss')
@@ -62,4 +91,4 @@ gulp.task('watch', function () {
     gulp.watch(assetsDev + 'img/*', ['build-img']);
 });
 
-gulp.task('default', ['watch', 'build-ts', 'build-css']);
+gulp.task('default', ['watch', 'build-ts', 'build-css', 'typedoc']);
